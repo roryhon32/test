@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorteio Pro - Sistema Profissional</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --accent: #06b6d4;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            padding: 20px;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .logo {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .title {
+            color: white;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+            font-weight: 400;
+        }
+
+        .main-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: var(--shadow-2xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+        }
+
+        .number-section {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .number-label {
+            color: var(--gray-600);
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 16px;
+        }
+
+        .number-display {
+            background: var(--gray-50);
+            border: 2px solid var(--gray-200);
+            border-radius: 20px;
+            padding: 48px 20px;
+            margin-bottom: 20px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .number-display.active {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1), inset 0 2px 4px rgba(0, 0, 0, 0.06);
+        }
+
+        .number {
+            font-size: 4rem;
+            font-weight: 800;
+            color: var(--gray-800);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.15s ease;
+            line-height: 1;
+        }
+
+        .number.sorting {
+            animation: numberPulse 0.15s infinite alternate;
+            color: var(--primary);
+        }
+
+        @keyframes numberPulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.05); }
+        }
+
+        .result-message {
+            background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 16px;
+            font-size: 1.125rem;
+            font-weight: 600;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: 24px;
+        }
+
+        .result-message.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .result-message::before {
+            content: '🎉';
+            margin-right: 8px;
+            font-size: 1.25rem;
+        }
+
+        .action-section {
+            text-align: center;
+        }
+
+        .sort-button {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            padding: 18px 36px;
+            font-size: 1.125rem;
+            font-weight: 600;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+            min-width: 200px;
+        }
+
+        .sort-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .sort-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .sort-button:hover::before {
+            left: 100%;
+        }
+
+        .sort-button:active {
+            transform: translateY(0);
+        }
+
+        .sort-button:disabled {
+            background: var(--gray-400);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: var(--shadow-md);
+        }
+
+        .sort-button:disabled::before {
+            display: none;
+        }
+
+        .sort-button.loading {
+            background: var(--gray-400);
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 4px;
+        }
+
+        /* Confetes profissionais */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            pointer-events: none;
+            z-index: 1000;
+            border-radius: 2px;
+        }
+
+        .confetti-1 { background: var(--primary); }
+        .confetti-2 { background: var(--secondary); }
+        .confetti-3 { background: var(--accent); }
+        .confetti-4 { background: var(--success); }
+        .confetti-5 { background: var(--warning); }
+        .confetti-6 { background: #ec4899; }
+        .confetti-7 { background: #f97316; }
+        .confetti-8 { background: #8b5cf6; }
+
+        .settings-section {
+            margin-bottom: 32px;
+            padding: 24px;
+            background: var(--gray-50);
+            border-radius: 16px;
+            border: 1px solid var(--gray-200);
+        }
+
+        .settings-label {
+            color: var(--gray-700);
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .range-inputs {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .input-group label {
+            color: var(--gray-600);
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .input-group input {
+            width: 80px;
+            padding: 12px;
+            border: 2px solid var(--gray-200);
+            border-radius: 12px;
+            font-size: 1.125rem;
+            font-weight: 600;
+            text-align: center;
+            color: var(--gray-800);
+            background: white;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .input-group input:hover {
+            border-color: var(--gray-300);
+        }
+
+        .range-separator {
+            color: var(--gray-500);
+            font-weight: 500;
+            margin: 0 4px;
+            font-size: 0.875rem;
+        }
+
+        .celebration {
+            animation: celebrate 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes celebrate {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .input-error {
+            border-color: var(--error) !important;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+        }
+
+        @keyframes celebrate {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        /* Responsividade */
+        @media (max-width: 480px) {
+            .main-card {
+                padding: 24px;
+                margin: 0 16px;
+            }
+            
+            .number {
+                font-size: 3rem;
+            }
+            
+            .title {
+                font-size: 1.75rem;
+            }
+            
+            .sort-button {
+                padding: 16px 32px;
+                font-size: 1rem;
+                min-width: 180px;
+            }
+        }
+
+        /* Estados de micro-interações */
+        .number-display:hover {
+            border-color: var(--gray-300);
+        }
+
+        .main-card:hover {
+            box-shadow: var(--shadow-2xl);
+            transform: translateY(-1px);
+        }
+
+        /* Acessibilidade */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="header">
+            <div class="logo">🎯</div>
+            <h1 class="title">Sorteio Fácil</h1>
+            <p class="subtitle">Uma forma Simples e divertida para seus sorteios</p>
+        </header>
+
+        <main class="main-card">
+            <div class="number-section">
+                <div class="number-label">Número Sorteado</div>
+                <div class="number-display" id="numberDisplay">
+                    <div class="number" id="number">?</div>
+                </div>
+                
+                <div class="result-message" id="resultMessage">
+                    Parabéns! O número sorteado foi: 
+                    <span id="numberrr"></span>
+                </div>
+            </div>
+
+            <div class="action-section">
+                <button class="sort-button" id="sortButton">
+                    🎲 Iniciar Sorteio
+                </button>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-label">Configurações do Sorteio</div>
+                <div class="range-inputs">
+                    <div class="input-group">
+                        <label for="minRange">De:</label>
+                        <input type="number" id="minRange" value="1" min="1" max="999">
+                    </div>
+                    <div class="range-separator">até</div>
+                    <div class="input-group">
+                        <label for="maxRange">Até:</label>
+                        <input type="number" id="maxRange" value="100" min="2" max="1000">
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-value" id="totalSorts">0</span>
+                    <span class="stat-label">Sorteios</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="lastNumber">-</span>
+                    <span class="stat-label">Último</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="currentRange">1-100</span>
+                    <span class="stat-label">Intervalo</span>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const numberDisplay = document.getElementById('numberDisplay');
+        const numberElement = document.getElementById('number');
+        const resultMessage = document.getElementById('resultMessage');
+        const sortButton = document.getElementById('sortButton');
+        const mainCard = document.querySelector('.main-card');
+        const totalSortsElement = document.getElementById('totalSorts');
+        const lastNumberElement = document.getElementById('lastNumber');
+        const currentRangeElement = document.getElementById('currentRange');
+        const minRangeInput = document.getElementById('minRange');
+        const maxRangeInput = document.getElementById('maxRange');
+        
+        let primeiroSorteioFeito = false;
+        let isDrawing = false;
+        let totalSorts = 0;
+
+        function getRandomNumber() {
+            const min = parseInt(minRangeInput.value) || 1;
+            const max = parseInt(maxRangeInput.value) || 100;
+            return Math.floor(Math.random() * (max - min +1)) + min;
+        }
+
+        function getFinalNumber() {
+            const min = parseInt(minRangeInput.value) || 1;
+            const max = parseInt(maxRangeInput.value) || 100;
+            
+            // Se o 42 estiver dentro do intervalo, usa ele, senão usa um número aleatório
+            if (!primeiroSorteioFeito) {
+                // Primeiro sorteio normal
+                const resultado = Math.floor(Math.random() * (max - min + 1)) + min;
+                primeiroSorteioFeito = true;
+                return resultado;
+            }         
+            
+            // A partir do segundo sorteio, sempre 141 (se dentro do intervalo)
+            if (141 >= min && 141 <= max) {
+              return 141;
+              primeiroSorteioFeito = false; // Marca que o sorteio foi feito
+            } else {
+              // Se 141 estiver fora do intervalo, retorna o máximo (evita erro)
+              return max;
+            }
+            }
+        function validateRange() {
+            const min = parseInt(minRangeInput.value);
+            const max = parseInt(maxRangeInput.value);
+            
+            minRangeInput.classList.remove('input-error');
+            maxRangeInput.classList.remove('input-error');
+            
+            if (isNaN(min) || isNaN(max) || min < 1 || max < 2 || min >= max) {
+                if (min >= max) {
+                    minRangeInput.classList.add('input-error');
+                    maxRangeInput.classList.add('input-error');
+                }
+                return false;
+            }
+            
+            return true;
+        }
+
+        function updateRangeDisplay() {
+            const min = parseInt(minRangeInput.value) || 1;
+            const max = parseInt(maxRangeInput.value) || 100;
+            currentRangeElement.textContent = `${min}-${max}`;
+            
+        }
+
+        function updateStats(number) {
+            totalSorts++;
+            totalSortsElement.textContent = totalSorts;
+            lastNumberElement.textContent = number;
+        }
+
+        function createConfetti() {
+            const colors = ['confetti-1', 'confetti-2', 'confetti-3', 'confetti-4', 'confetti-5', 'confetti-6', 'confetti-7', 'confetti-8'];
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti ' + colors[Math.floor(Math.random() * colors.length)];
+            
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+            
+            confetti.style.left = centerX + 'px';
+            confetti.style.top = centerY + 'px';
+            
+            const angle = Math.random() * 360;
+            const distance = Math.random() * 300 + 200;
+            const duration = Math.random() * 0.8 + 1.5;
+            
+            const radians = (angle * Math.PI) / 180;
+            const finalX = centerX + Math.cos(radians) * distance;
+            const finalY = centerY + Math.sin(radians) * distance;
+            
+            confetti.animate([
+                {
+                    transform: `translate(-50%, -50%) scale(0) rotate(0deg)`,
+                    opacity: 1
+                },
+                {
+                    transform: `translate(-50%, -50%) scale(1.2) rotate(180deg)`,
+                    opacity: 1,
+                    offset: 0.15
+                },
+                {
+                    transform: `translate(${finalX - centerX}px, ${finalY - centerY}px) scale(0.3) rotate(720deg)`,
+                    opacity: 0
+                }
+            ], {
+                duration: duration * 1000,
+                easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+            });
+            
+            document.body.appendChild(confetti);
+            
+            setTimeout(() => {
+                confetti.remove();
+            }, duration * 1000);
+        }
+
+        function showConfetti() {
+            for (let wave = 0; wave < 3; wave++) {
+                setTimeout(() => {
+                    const confettiCount = [30, 25, 20][wave];
+                    for (let i = 0; i < confettiCount; i++) {
+                        setTimeout(() => {
+                            createConfetti();
+                        }, i * (15 + wave * 5));
+                    }
+                }, wave * 200);
+            }
+        }
+
+        function animateNumberDrawing() {
+            return new Promise((resolve) => {
+                let count = 0;
+                const maxCount = 45;
+                
+                numberElement.classList.add('sorting');
+                numberDisplay.classList.add('active');
+                resultMessage.classList.remove('show');
+                
+                const interval = setInterval(() => {
+                    numberElement.textContent = getRandomNumber();
+                    count++;
+                    
+                    if (count >= maxCount) {
+                        clearInterval(interval);
+                        numberElement.classList.remove('sorting');
+                        resolve();
+                    }
+                }, 85);
+            });
+        }
+
+        async function performDraw() {
+            if (isDrawing) return;
+            
+            if (!validateRange()) {
+                alert('Por favor, insira um intervalo válido. O valor mínimo deve ser menor que o máximo.');
+                return;
+            }
+            
+            isDrawing = true;
+            sortButton.disabled = true;
+            sortButton.innerHTML = '<span class="loading-spinner"></span>Sorteando...';
+            sortButton.classList.add('loading');
+            
+            await animateNumberDrawing();
+            
+            const finalNumber = getFinalNumber();
+            numberElement.textContent = finalNumber;
+            document.getElementById('numberrr').textContent = finalNumber;
+            
+            setTimeout(() => {
+                resultMessage.classList.add('show');
+                mainCard.classList.add('celebration');
+                numberDisplay.classList.remove('active');
+                showConfetti();
+                updateStats(finalNumber);
+                
+                setTimeout(() => {
+                    mainCard.classList.remove('celebration');
+                }, 600);
+            }, 300);
+            
+            sortButton.disabled = false;
+            sortButton.innerHTML = '🔄 Sortear Novamente';
+            sortButton.classList.remove('loading');
+            isDrawing = false;
+        }
+
+        function resetDraw() {
+            if (!isDrawing) {
+                resultMessage.classList.remove('show');
+                numberElement.textContent = '?';
+                numberDisplay.classList.remove('active');
+                sortButton.innerHTML = '🎲 Iniciar Sorteio';
+            }
+        }
+
+        sortButton.addEventListener('click', () => {
+            if (sortButton.innerHTML.includes('Novamente')) {
+                resetDraw();
+            } else {
+                performDraw();
+            }
+        });
+
+        // Event listeners para os inputs de intervalo
+        minRangeInput.addEventListener('input', () => {
+            validateRange();
+            updateRangeDisplay();
+        });
+
+        maxRangeInput.addEventListener('input', () => {
+            validateRange();
+            updateRangeDisplay();
+        });
+
+        minRangeInput.addEventListener('blur', () => {
+            if (parseInt(minRangeInput.value) < 1) {
+                minRangeInput.value = 1;
+            }
+            updateRangeDisplay();
+        });
+
+        maxRangeInput.addEventListener('blur', () => {
+            const min = parseInt(minRangeInput.value) || 1;
+            if (parseInt(maxRangeInput.value) <= min) {
+                maxRangeInput.value = min + 1;
+            }
+            updateRangeDisplay();
+        });
+
+        // Inicializar display do intervalo
+        updateRangeDisplay();
+
+        // Adicionar efeitos sonoros visuais
+        document.addEventListener('click', (e) => {
+            if (e.target === sortButton && !isDrawing) {
+                const ripple = document.createElement('div');
+                ripple.style.position = 'absolute';
+                ripple.style.borderRadius = '50%';
+                ripple.style.background = 'rgba(255, 255, 255, 0.6)';
+                ripple.style.transform = 'scale(0)';
+                ripple.style.animation = 'ripple 0.6s linear';
+                ripple.style.left = '50%';
+                ripple.style.top = '50%';
+                ripple.style.width = '20px';
+                ripple.style.height = '20px';
+                ripple.style.marginLeft = '-10px';
+                ripple.style.marginTop = '-10px';
+                
+                sortButton.style.position = 'relative';
+                sortButton.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            }
+        });
+    </script>
+
+    <style>
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+    </style>
+</body>
+</html>
